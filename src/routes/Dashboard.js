@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Column, Row } from '../components'
+import { Text, Column, Row, Input } from '../components'
 
 export default () => (
   <Row justify='center' pt='100px'>
@@ -11,7 +11,7 @@ export default () => (
         Very Useful Tools to Remember
       </Text>
       <Row>
-        <input />
+        <Input label='Test' required placeholder='search' />
       </Row>
     </Column>
   </Row>

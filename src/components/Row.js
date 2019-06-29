@@ -11,8 +11,8 @@ export default styled.div`
       flex: ${flex !== undefined ? flex : 1};
       flex-direction: row;
       flex-wrap: wrap;
-      ${align && `align-items: ${align}`};
-      ${justify && `justify-content: ${justify}`};
+      ${align ? `align-items: ${align}` : ''};
+      ${justify ? `justify-content: ${justify}` : ''};
     `
   }}
 `

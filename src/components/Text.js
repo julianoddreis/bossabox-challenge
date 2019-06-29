@@ -20,8 +20,8 @@ const TextComponent = ({ as = 'p', children, ...rest }) => {
 
 const StyledText = styled(TextComponent)`
   ${props => {
-    const { as, theme, color, fontFamily } = props
-    const { fontSize, bold } = customProps(as)
+    const { as = 'p', theme, color, fontFamily } = props
+    const { fontSize = props.fontSize, bold = props.bold } = customProps(as)
     return `
       margin: 0;
       padding: 0;

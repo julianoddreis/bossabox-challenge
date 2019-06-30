@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Column, Row, Input, Button, Checkbox } from '../components'
+import { Text, Column, Row, Input, Button, Checkbox, Card } from '../components'
 
 export default () => (
   <Row justify='center' pt='100px'>
@@ -41,6 +41,21 @@ export default () => (
         <Button mb='10px' variant='quartiary' kind='success' disabled>Button</Button>
         <Button mb='10px' variant='quartiary' kind='danger'>Button</Button>
         <Button variant='quartiary' kind='danger' disabled>Button</Button>
+        <Card mb='30px'>
+          Card
+        </Card>
+        <Card elevation={1} mb='30px'>
+          Card el1
+        </Card>
+        <Card elevation={2} mb='30px'>
+          Card el2
+        </Card>
+        <Card elevation={3} mb='30px'>
+          Card el3
+        </Card>
+        <Card elevation={4} mb='30px'>
+          Card el4
+        </Card>
       </Column>
     </Column>
   </Row>

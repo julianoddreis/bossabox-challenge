@@ -1,14 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import modifiers from '../helpers/modifiers'
+import modifiers from '../../helpers/modifiers'
 
 const customProps = as => ({
-  ...(as === 'h1') && { fontSize: '42px', bold: true },
-  ...(as === 'h2') && { fontSize: '36px', bold: true },
-  ...(as === 'h3') && { fontSize: '30px', bold: true },
-  ...(as === 'h4') && { fontSize: '26px', bold: true },
-  ...(as === 'h5') && { fontSize: '24px', bold: true },
+  ...(as === 'h1') && { fontSize: '42px', variant: 'bold' },
+  ...(as === 'h2') && { fontSize: '36px', variant: 'bold' },
+  ...(as === 'h3') && { fontSize: '30px', variant: 'bold' },
+  ...(as === 'h4') && { fontSize: '26px', variant: 'bold' },
+  ...(as === 'h5') && { fontSize: '24px', variant: 'bold' },
   ...(as === 'p') && { fontSize: '20px' },
   ...(as === 'small') && { fontSize: '18px' },
   ...(as === 'smallest') && { fontSize: '16px' }
@@ -21,7 +21,7 @@ const TextComponent = ({ as = 'p', children, ...rest }) => {
 const StyledText = styled(TextComponent)`
   ${props => {
     const { as = 'p', theme, color, fontFamily } = props
-    const { fontSize = props.fontSize, bold = props.bold } = customProps(as)
+    const { fontSize = props.fontSize, variant = props.variant } = customProps(as)
     return `
       margin: 0;
       padding: 0;
@@ -29,7 +29,7 @@ const StyledText = styled(TextComponent)`
       font-family: ${fontFamily || "'Source Sans Pro', sans-serif"};
       color: ${color || theme.colors.ink};
       ${fontSize ? `font-size: ${fontSize};` : ''}
-      ${bold ? `font-weight: bold;` : ''}
+      ${variant === 'bold' ? `font-weight: bold;` : ''}
     `
   }};
 `

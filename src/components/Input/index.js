@@ -1,8 +1,8 @@
 import React from 'react'
 import styled, { withTheme } from 'styled-components'
-import { Row, Column, Text } from './'
+import { Row, Column, Text } from '../'
 
-import modifiers from '../helpers/modifiers'
+import modifiers from '../../helpers/modifiers'
 
 export default withTheme(props => {
   const { label, placeholder, required, error, errorMessage, theme: { colors }, ...rest } = props
@@ -10,7 +10,7 @@ export default withTheme(props => {
     <InputContainer>
       {label && (
         <Row flex={0}>
-          <Text mb='10px' bold>{label}</Text>
+          <Text mb='10px' variant='bold'>{label}</Text>
           {required && <Text pt='5px' pl='5px' color={error ? colors.red : colors.lightInk}>*</Text>}
         </Row>
       )}

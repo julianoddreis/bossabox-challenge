@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import modifiers from '../helpers/modifiers'
+import modifiers from '../../helpers/modifiers'
 
 export default styled.div`
   ${props => {
@@ -9,7 +9,7 @@ export default styled.div`
       ${modifiers(props)}
       display: flex;
       flex: ${flex !== undefined ? flex : 1};
-      flex-direction: row;
+      flex-direction: column;
       flex-wrap: wrap;
       ${align ? `align-items: ${align}` : ''};
       ${justify ? `justify-content: ${justify}` : ''};

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Column, Row, Input, Button } from '../components'
+import { Text, Column, Row, Input, Button, Checkbox } from '../components'
 
 export default () => (
   <Row justify='center' pt='100px'>
@@ -12,6 +12,8 @@ export default () => (
       </Text>
       <Column>
         <Input label='Test' required placeholder='search' />
+        <Checkbox mb='30px' label='Checkbox' />
+        <Checkbox mb='30px' disabled label='Checkbox' />
         <Button mb='10px'>Button</Button>
         <Button mb='10px' disabled>Button</Button>
         <Button mb='10px' kind='success'>Button</Button>

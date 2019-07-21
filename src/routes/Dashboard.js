@@ -4,29 +4,88 @@ import Loader from 'react-loader-spinner'
 import { Text, Column, Row, Input, Button, Checkbox, Card, Modal } from '../components'
 import ToolsService from '../services/tools'
 
+const newToolInitialValues = {
+  title: '',
+  link: '',
+  description: '',
+  tags: ''
+}
+
 export default withTheme(props => {
   const [isLoading, setIsLoading] = useState(true)
   const [tools, setTools] = useState([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [searchFilter, setSearchFilter] = useState('')
+  const [searchOnlyTags, setSearchOnlyTags] = useState(false)
+  const [formWasSubmitted, setFormWasSubmitted] = useState(false)
+  const [newToolErrors, setNewToolErrors] = useState({})
+  const [newToolValues, setNewToolValues] = useState(newToolInitialValues)
+
+  const getTools = async (params = '') => {
+    try {
+      const response = await ToolsService.getTools(params)
+      setTools(response.data)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setTimeout(() => setIsLoading(false), 500)
+    }
+  }
 
   useEffect(() => {
-    const getTools = async () => {
-      try {
-        const response = await ToolsService.getAll()
-        setTools(response.data)
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setTimeout(() => setIsLoading(false), 500)
-      }
-    }
-    getTools()
-  }, [])
+    const typeOfSearch = searchOnlyTags ? 'tags_like' : 'q'
+    const params = searchFilter ? `?${typeOfSearch}=${searchFilter}` : ''
+    getTools(params)
+  }, [searchFilter, searchOnlyTags])
 
   const toggleModal = () => setModalIsOpen(!modalIsOpen)
 
-  const handleClickAddToll = () => {
-    toggleModal()
+  const handleSearchInputChange = ({ target }) => setSearchFilter(target.value)
+
+  const handleOnlyTagsChange = () => setSearchOnlyTags(!searchOnlyTags)
+
+  const handleChangeNewToolForm = (name, value) => {
+    if (formWasSubmitted) {
+      validateNewTool()
+    }
+    setNewToolValues({
+      ...newToolValues,
+      [name]: value
+    })
+  }
+
+  const validateNewTool = () => {
+    const errors = Object.keys(newToolValues).reduce((acc, curr) => {
+      if (newToolValues[curr] !== '') return acc
+      return { ...acc, [curr]: 'Required' }
+    }, {})
+    setNewToolErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const submitNewTool = async () => {
+    setFormWasSubmitted(true)
+    const isValid = validateNewTool()
+    if (!isValid) {
+      return
+    }
+    setIsLoading(true)
+    try {
+      const newTool = {
+        ...newToolValues,
+        tags: newToolValues.tags.split(' ')
+      }
+      const res = await ToolsService.create(newTool)
+      setTools([...tools, res.data])
+      setFormWasSubmitted(false)
+      setNewToolValues(newToolInitialValues)
+      setTimeout(() => {
+        setModalIsOpen(false)
+        setIsLoading(false)
+      }, 500)
+    } catch (error) {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -39,7 +98,7 @@ export default withTheme(props => {
           Very Useful Tools to Remember
         </Text>
         {(() => {
-          if (isLoading) {
+          if (isLoading && !modalIsOpen) {
             return (
               <LoaderContainer>
                 <Loader type='Oval' height={80} width={80} color={props.theme.colors.ink} />
@@ -50,10 +109,15 @@ export default withTheme(props => {
             <>
               <Row align='flex-start' justify='space-between'>
                 <Row align='flex-start'>
-                  <Input placeholder='search' mr='10px' />
-                  <Checkbox label='search in tags only' mt='20px' />
+                  <Input placeholder='search' mr='10px' onChange={handleSearchInputChange} value={searchFilter} />
+                  <Checkbox
+                    label='search in tags only'
+                    mt='20px'
+                    checked={searchOnlyTags}
+                    onChange={handleOnlyTagsChange}
+                  />
                 </Row>
-                <Button width='100px' onClick={handleClickAddToll}>
+                <Button width='100px' onClick={toggleModal}>
                   <Icon src='assets/images/add-circle.svg' size={20} /> Add
                 </Button>
               </Row>
@@ -61,7 +125,9 @@ export default withTheme(props => {
                 {tools.map((tool, id) => (
                   <Card mb='30px' elevation={1} key={id}>
                     <Row justify='space-between' mb='15px'>
-                      <Text as='h5'>{tool.title}</Text>
+                      <Link target='blank' href={tool.link}>
+                        <Text as='h5'>{tool.title}</Text>
+                      </Link>
                       <Button variant='quartiary' kind='danger'>
                         <Icon src='assets/images/icon-close.svg' size={12} /> remove
                       </Button>
@@ -84,7 +150,46 @@ export default withTheme(props => {
         })()}
       </Column>
       <Modal isOpen={modalIsOpen}>
-        <Text onClick={toggleModal}>modal</Text>
+        <Column align='center'>
+          <Text as='h4' mb='20px'>
+            Add new tool
+          </Text>
+          <Input
+            label='Tool Name'
+            onChange={e => handleChangeNewToolForm('title', e.target.value)}
+            value={newToolValues.title}
+            error={newToolErrors.title}
+          />
+          <Input
+            label='Tools Link'
+            onChange={e => handleChangeNewToolForm('link', e.target.value)}
+            value={newToolValues.link}
+            error={newToolErrors.link}
+          />
+          <Input
+            as='textarea'
+            label='Tool description'
+            onChange={e => handleChangeNewToolForm('description', e.target.value)}
+            value={newToolValues.description}
+            error={newToolErrors.description}
+          />
+          <Input
+            label='Tags'
+            onChange={e => handleChangeNewToolForm('tags', e.target.value)}
+            value={newToolValues.tags}
+            error={newToolErrors.tags}
+          />
+          <Row width='400px' justify='space-between' mt='20px'>
+            <Button kind='danger' onClick={toggleModal} disabled={isLoading}>
+              Cancel
+            </Button>
+            {isLoading ? (
+              <Loader color={props.theme.colors.ink} type='Oval' height={40} width={40} />
+            ) : (
+              <Button onClick={submitNewTool}>Add tool</Button>
+            )}
+          </Row>
+        </Column>
       </Modal>
     </Row>
   )
@@ -104,4 +209,8 @@ const LoaderContainer = styled.div`
   align-items: center;
   flex: 1;
   margin-top: 50px;
+`
+
+const Link = styled.a`
+  text-decoration: none;
 `

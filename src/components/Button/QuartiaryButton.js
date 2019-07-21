@@ -33,7 +33,7 @@ const defaultStyles = `
   outline: none;
   border-radius: 5px;
   border: none;
-  width: 158px;
+  width: auto;
   height: 35px;
   background: white;
 `

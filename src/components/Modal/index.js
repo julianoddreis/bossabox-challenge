@@ -13,7 +13,7 @@ export default ({ isOpen, children }) => {
 
   return ReactDOM.createPortal(
     <ModalContainer isOpen={isOpen}>
-      <Modal>{children}</Modal>
+      <Modal isOpen={isOpen}>{children}</Modal>
     </ModalContainer>,
     docRef
   )
@@ -32,9 +32,14 @@ const ModalContainer = styled.div`
 `
 
 const Modal = styled.div`
-  width: 570;
+  max-height: calc(100vh - 100px);
+  overflow-y: scroll;
+  width: 570px;
   height: auto;
-  padding: 80px;
+  padding: 40px 20px;
   border-radius: 5px;
+  transform: ${({ isOpen }) => (isOpen ? 'translateY(0)' : 'translateY(100%)')};
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  transition: all 0.2s ease-in-out;
   background-color: ${({ theme }) => theme.colors.white};
 `

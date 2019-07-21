@@ -1,8 +1,7 @@
 import api from '../providers/fetchClient'
 
 export default {
-  getAll: () => api.get('/tools'),
+  getTools: (params = '') => api.get(`/tools${params}`),
   create: tool => api.post('/tools', tool),
-  delete: id => api.delete(`/tools/${id}`),
-  getSome: params => api.get(`/tools${params}`)
+  delete: id => api.delete(`/tools/${id}`)
 }

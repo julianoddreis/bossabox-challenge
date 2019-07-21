@@ -5,7 +5,7 @@ import { Row, Column, Text } from '../'
 import modifiers from '../../helpers/modifiers'
 
 export default withTheme(props => {
-  const { label, placeholder, required, error, errorMessage, theme: { colors }, ...rest } = props
+  const { label, placeholder, required, error, theme: { colors }, ...rest } = props
   return (
     <InputContainer>
       {label && (
@@ -21,7 +21,7 @@ export default withTheme(props => {
       />
       {error &&
         <Error flex={0}>
-          <Text as='small' mt='8px' color={colors.red}>{errorMessage}</Text>
+          <Text as='small' mt='8px' color={colors.red}>{error}</Text>
         </Error>
       }
     </InputContainer>

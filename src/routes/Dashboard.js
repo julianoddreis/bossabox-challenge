@@ -20,6 +20,7 @@ export default withTheme(props => {
   const [formWasSubmitted, setFormWasSubmitted] = useState(false)
   const [newToolErrors, setNewToolErrors] = useState({})
   const [newToolValues, setNewToolValues] = useState(newToolInitialValues)
+  const [toolToRemove, setToolToRemove] = useState(null)
 
   const getTools = async (params = '') => {
     try {
@@ -76,15 +77,30 @@ export default withTheme(props => {
         tags: newToolValues.tags.split(' ')
       }
       const res = await ToolsService.create(newTool)
-      setTools([...tools, res.data])
-      setFormWasSubmitted(false)
-      setNewToolValues(newToolInitialValues)
       setTimeout(() => {
+        setTools([...tools, res.data])
+        setFormWasSubmitted(false)
+        setNewToolValues(newToolInitialValues)
         setModalIsOpen(false)
         setIsLoading(false)
       }, 500)
     } catch (error) {
       setIsLoading(false)
+    }
+  }
+
+  const deleteTool = () => {
+    setIsLoading(true)
+    try {
+      ToolsService.delete(toolToRemove.id)
+      const newTools = tools.filter(tool => tool.id !== toolToRemove.id)
+      setTimeout(() => {
+        setTools(newTools)
+        setIsLoading(false)
+        setToolToRemove(null)
+      }, 500)
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -98,7 +114,7 @@ export default withTheme(props => {
           Very Useful Tools to Remember
         </Text>
         {(() => {
-          if (isLoading && !modalIsOpen) {
+          if (isLoading && !modalIsOpen && !toolToRemove) {
             return (
               <LoaderContainer>
                 <Loader type='Oval' height={80} width={80} color={props.theme.colors.ink} />
@@ -128,7 +144,7 @@ export default withTheme(props => {
                       <Link target='blank' href={tool.link}>
                         <Text as='h5'>{tool.title}</Text>
                       </Link>
-                      <Button variant='quartiary' kind='danger'>
+                      <Button variant='quartiary' kind='danger' onClick={() => setToolToRemove(tool)}>
                         <Icon src='assets/images/icon-close.svg' size={12} /> remove
                       </Button>
                     </Row>
@@ -168,6 +184,7 @@ export default withTheme(props => {
           />
           <Input
             as='textarea'
+            rows='3'
             label='Tool description'
             onChange={e => handleChangeNewToolForm('description', e.target.value)}
             value={newToolValues.description}
@@ -191,6 +208,28 @@ export default withTheme(props => {
           </Row>
         </Column>
       </Modal>
+      {toolToRemove && (
+        <Modal isOpen>
+          <Column align='center'>
+            <Text as='h4' mb='20px'>
+            Remove tool
+            </Text>
+            <Text as='p' mb='20px'>
+            Are you sure you want to remove {toolToRemove.title}?
+            </Text>
+            <Row width='400px' justify='space-between' mt='20px'>
+              <Button kind='danger' onClick={() => setToolToRemove(null)} disabled={isLoading}>
+              Cancel
+              </Button>
+              {isLoading ? (
+                <Loader color={props.theme.colors.ink} type='Oval' height={40} width={40} />
+              ) : (
+                <Button onClick={deleteTool}>Yes, remove</Button>
+              )}
+            </Row>
+          </Column>
+        </Modal>
+      )}
     </Row>
   )
 })

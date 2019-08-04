@@ -27,13 +27,14 @@ const ModalContainer = styled.div`
   justify-content: center;
   z-index: 999;
   position: fixed;
+  top: 0;
   background-color: rgba(0, 0, 0, 0.4);
   visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
 `
 
 const Modal = styled.div`
   max-height: calc(100vh - 100px);
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 570px;
   height: auto;
   padding: 40px 20px;

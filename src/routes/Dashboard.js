@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Loader from 'react-loader-spinner'
 import { Text, Column, Row, Input, Button, Checkbox, Card, Modal } from '../components'
+import { withNotification } from '../HoCs'
 import ToolsService from '../services/tools'
 
 const newToolInitialValues = {
@@ -11,7 +12,7 @@ const newToolInitialValues = {
   tags: ''
 }
 
-export default withTheme(props => {
+const Dashboard = props => {
   const [isLoading, setIsLoading] = useState(true)
   const [tools, setTools] = useState([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -27,7 +28,7 @@ export default withTheme(props => {
       const response = await ToolsService.getTools(params)
       setTools(response.data)
     } catch (error) {
-      console.log(error)
+      props.notification('Error', 'Something went wrong', 'error')
     } finally {
       setTimeout(() => setIsLoading(false), 500)
     }
@@ -45,7 +46,7 @@ export default withTheme(props => {
 
   const handleOnlyTagsChange = () => setSearchOnlyTags(!searchOnlyTags)
 
-  const handleChangeNewToolForm = (name, value) => {
+  const handleChangeNewToolForm = ({ target: { name, value } }) => {
     if (formWasSubmitted) {
       validateNewTool()
     }
@@ -83,24 +84,29 @@ export default withTheme(props => {
         setNewToolValues(newToolInitialValues)
         setModalIsOpen(false)
         setIsLoading(false)
+        props.notification('It\'s done!', 'The new tool was added.', 'success')
       }, 500)
     } catch (error) {
+      props.notification('Error', 'Something went wrong', 'error')
       setIsLoading(false)
     }
   }
 
-  const deleteTool = () => {
+  const deleteTool = async () => {
     setIsLoading(true)
     try {
-      ToolsService.delete(toolToRemove.id)
+      await ToolsService.delete(toolToRemove.id)
       const newTools = tools.filter(tool => tool.id !== toolToRemove.id)
       setTimeout(() => {
         setTools(newTools)
         setIsLoading(false)
         setToolToRemove(null)
+        props.notification('It\'s done!', 'The tool was deleted with success.', 'success')
       }, 500)
     } catch (error) {
-      console.log(error)
+      props.notification('Error', 'Something went wrong', 'error')
+      setIsLoading(false)
+      setToolToRemove(null)
     }
   }
 
@@ -172,13 +178,15 @@ export default withTheme(props => {
           </Text>
           <Input
             label='Tool Name'
-            onChange={e => handleChangeNewToolForm('title', e.target.value)}
+            name='title'
+            onChange={handleChangeNewToolForm}
             value={newToolValues.title}
             error={newToolErrors.title}
           />
           <Input
             label='Tools Link'
-            onChange={e => handleChangeNewToolForm('link', e.target.value)}
+            name='link'
+            onChange={handleChangeNewToolForm}
             value={newToolValues.link}
             error={newToolErrors.link}
           />
@@ -186,13 +194,15 @@ export default withTheme(props => {
             as='textarea'
             rows='3'
             label='Tool description'
-            onChange={e => handleChangeNewToolForm('description', e.target.value)}
+            name='description'
+            onChange={handleChangeNewToolForm}
             value={newToolValues.description}
             error={newToolErrors.description}
           />
           <Input
             label='Tags'
-            onChange={e => handleChangeNewToolForm('tags', e.target.value)}
+            name='tags'
+            onChange={handleChangeNewToolForm}
             value={newToolValues.tags}
             error={newToolErrors.tags}
           />
@@ -232,7 +242,7 @@ export default withTheme(props => {
       )}
     </Row>
   )
-})
+}
 
 const Icon = styled.img`
   ${({ size }) => `
@@ -253,3 +263,5 @@ const LoaderContainer = styled.div`
 const Link = styled.a`
   text-decoration: none;
 `
+
+export default withTheme(withNotification(Dashboard))
